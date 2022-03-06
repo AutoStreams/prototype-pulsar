@@ -1,3 +1,4 @@
+[![Javadoc](https://img.shields.io/badge/JavaDoc-Online-green)](https://autostreams.github.io/prototype-pulsar/javadoc/)
 ## About The Project
 This is a collection that utilizes the data provider, Pulsar producer prototype, and the Pulsar consumer prototype found in the subdirectories of this project. To build and run a project individually, see the corresponding subdirectory for further details.
 ## Getting Started
