@@ -1,5 +1,7 @@
 */.idea
+/.idea
 */target
 *.iml
 *.project
 *.settings
+streams-data-provider/
