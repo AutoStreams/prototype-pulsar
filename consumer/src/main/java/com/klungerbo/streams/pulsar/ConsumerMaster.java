@@ -54,7 +54,6 @@ public class ConsumerMaster implements StreamsServer<String> {
      */
     public void startWorkers() {
         for (ConsumerWorker worker : workers) {
-            worker.initialize();
             worker.start();
         }
     }

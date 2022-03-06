@@ -39,12 +39,14 @@ public class ConsumerWorker implements Runnable {
             logger.error("Exception occurred during construction of consumer");
             ioe.printStackTrace();
         }
+        this.start();
     }
 
     /**
      * Starts the thread for the consumer, also starting the consumer itself.
      */
     public void start() {
+        this.initialize();
         Thread t = new Thread(this);
         t.start();
     }
