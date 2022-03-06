@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+
+  #------------------------------------#
+  #------| Streams Pulsar utils |------#
+  #------------------------------------#
+  data-provider:
+    build: ./streams-data-provider
+    environment:
+      PRODUCER_URL: producer
+      PRODUCER_PORT: 8992
+    depends_on:
+      - producer
+
+  #-----------------------------------#
+  #----| Implementation Services |----#
+  #-----------------------------------#
+  producer:
+    build: ./producer
+    environment:
+      PULSAR_BROKER_URL: 'broker-1:9092,broker-2:29092'
+    depends_on:
+      - init-pulsar
+    ports:
+      - "8992:8992"
+
+  consumer:
+    build: ./consumer
+    environment:
+      PULSAR_BROKER_URL: 'broker-1:9092,broker-2:29092'
+    depends_on:
+      - init-pulsar
+    ports:
+      - "8993:8992"
+      
