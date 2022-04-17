@@ -35,7 +35,11 @@ import org.slf4j.LoggerFactory;
 public class PulsarPrototypeProducer implements StreamsServer<String> {
     private static final String CONFIG_PROPERTIES = "config.properties";
     private static final String PRODUCER_PROPERTIES = "producer.properties";
+    private static final int MESSAGES_PER_ITERATION = 100000;
     private final Logger logger = LoggerFactory.getLogger(PulsarPrototypeProducer.class);
+    private int messagesSent = 0;
+    private boolean newItr = true;
+    private long start;
     private PulsarClient pulsarClient;
     private Producer<String> producer;
 
@@ -238,10 +242,30 @@ public class PulsarPrototypeProducer implements StreamsServer<String> {
         return true;
     }
 
+    private void logElapsedTime() {
+        long finish = System.currentTimeMillis();
+        double elapsedTimeInSeconds = (finish - start) / 1000.0;
+        String elapsedTimeInSecondsFormatted = String.format("%.2f", elapsedTimeInSeconds);
+
+        logger.info("Sent {} messages | {}s | {}msg/s |",
+            MESSAGES_PER_ITERATION,
+            elapsedTimeInSecondsFormatted,
+            (int) (MESSAGES_PER_ITERATION / elapsedTimeInSeconds)
+        );
+
+        start = System.currentTimeMillis();
+    }
+
     private void sendMessage(String message) {
-        this.producer
-            .sendAsync(message)
-            .thenAcceptAsync(messageId -> logger.info("{} sent to server", message));
+        this.producer.sendAsync(message).thenAcceptAsync(messageId -> {
+            ++messagesSent;
+
+            boolean hasSentAnIteration = (messagesSent % MESSAGES_PER_ITERATION) == 0;
+            if (hasSentAnIteration && newItr) {
+                this.logElapsedTime();
+                newItr = false;
+            }
+        });
     }
 
     /**
@@ -251,6 +275,12 @@ public class PulsarPrototypeProducer implements StreamsServer<String> {
      */
     @Override
     public void onMessage(String message) {
+        if (messagesSent == 0) {
+            start = System.currentTimeMillis();
+        } else {
+            newItr = true;
+        }
+
         this.sendMessage(message);
     }
 

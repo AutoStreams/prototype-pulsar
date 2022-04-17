@@ -5,6 +5,8 @@
 
 package com.autostreams.utils.dataprovider;
 
+import com.thedeanda.lorem.Lorem;
+import com.thedeanda.lorem.LoremIpsum;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
@@ -24,12 +26,14 @@ public final class DataProvider {
     private static final int NANO_SECOND = 1000000000;
     private final Logger logger = LoggerFactory.getLogger(DataProvider.class);
     private final Bootstrap bootstrap = new Bootstrap();
+    private final Lorem lorem = LoremIpsum.getInstance();
     private final String host;
     private final int port;
     private EventLoopGroup group = new NioEventLoopGroup();
     private boolean running = true;
     private ChannelFuture channelFuture = null;
     private int messagesPerSecond = 1;
+    private final String[] messages = new String[1000];
     int currentMessageIndex = 0;
 
     /**
@@ -63,6 +67,8 @@ public final class DataProvider {
         bootstrap.group(group)
             .channel(NioSocketChannel.class)
             .handler(new DataProducerInitializer(this));
+
+        this.generateRandomMessages();
 
         int tries = 100;
         int currentTry = 1;
@@ -105,6 +111,21 @@ public final class DataProvider {
         return true;
     }
 
+    private void generateRandomMessages() {
+        for (int i = 0; i < 1000; i++) {
+            this.messages[i] = this.getRandomString();
+        }
+    }
+
+    /**
+     * Generate a random lorem ipsum string.
+     *
+     * @return a random lorem ipsum string of min <= n <= max amount of n words.
+     */
+    private String getRandomString() {
+        return lorem.getWords(7, 12);
+    }
+
     /**
      * Sets the number of messages per second.
      * NOTE: Needs to be greater than 0.
@@ -142,10 +163,11 @@ public final class DataProvider {
     }
 
     private void sendMessage() {
+        int index = currentMessageIndex % 1000;
         if (this.channelFuture != null) {
-            ++currentMessageIndex;
             this.channelFuture = this.channelFuture.channel()
-                .writeAndFlush(currentMessageIndex + "\r\n");
+                .writeAndFlush(messages[index] + "\r\n");
+            currentMessageIndex++;
         }
     }
 
