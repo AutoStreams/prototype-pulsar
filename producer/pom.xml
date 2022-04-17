@@ -15,19 +15,19 @@
         <mainClass>com.autostreams.pulsar.Main</mainClass>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
-            <groupId>com.github.AutoStreams</groupId>
-            <artifactId>prototype-utils</artifactId>
-            <version>v0.1.1</version>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.75.Final</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.36</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.pulsar</groupId>
             <artifactId>pulsar-client</artifactId>

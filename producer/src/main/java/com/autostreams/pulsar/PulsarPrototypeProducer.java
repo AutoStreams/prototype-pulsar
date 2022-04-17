@@ -36,8 +36,8 @@ public class PulsarPrototypeProducer implements StreamsServer<String> {
     private static final String CONFIG_PROPERTIES = "config.properties";
     private static final String PRODUCER_PROPERTIES = "producer.properties";
     private final Logger logger = LoggerFactory.getLogger(PulsarPrototypeProducer.class);
-    PulsarClient pulsarClient;
-    Producer<String> producer;
+    private PulsarClient pulsarClient;
+    private Producer<String> producer;
 
     /**
      * Code adapted from:
@@ -238,6 +238,12 @@ public class PulsarPrototypeProducer implements StreamsServer<String> {
         return true;
     }
 
+    private void sendMessage(String message) {
+        this.producer
+            .sendAsync(message)
+            .thenAcceptAsync(messageId -> logger.info("{} sent to server", message));
+    }
+
     /**
      * Send a message to a Pulsar broker through a record.
      *
@@ -245,8 +251,7 @@ public class PulsarPrototypeProducer implements StreamsServer<String> {
      */
     @Override
     public void onMessage(String message) {
-        this.producer.sendAsync(message)
-            .thenAcceptAsync(msgId -> logger.debug("{} sent to broker", msgId));
+        this.sendMessage(message);
     }
 
     /**
