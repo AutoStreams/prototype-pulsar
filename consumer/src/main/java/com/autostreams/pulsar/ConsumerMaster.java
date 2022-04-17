@@ -39,7 +39,7 @@ public class ConsumerMaster implements StreamsServer<String> {
      */
     private void generateWorkers(int consumerCount) {
         if (consumerCount == 0) {
-            logger.info("Attempting to load properties from file");
+            logger.debug("Attempting to load properties from file");
 
             Properties props = FileUtils.loadPropertiesFromFile(CONFIG_NAME);
             consumerCount = Integer.parseInt(props.getProperty("consumers.count"));
@@ -48,8 +48,8 @@ public class ConsumerMaster implements StreamsServer<String> {
         logger.info("Consumer generation started. {} workers ordered", consumerCount);
         for (int i = 0; i < consumerCount; i++) {
             ConsumerWorker cw = new ConsumerWorker();
-            cw.initialize();
             workers.add(cw);
+            addTimerToWorker(cw);
         }
     }
 
@@ -58,8 +58,13 @@ public class ConsumerMaster implements StreamsServer<String> {
      */
     public void startWorkers() {
         for (ConsumerWorker worker : workers) {
+            worker.initialize();
             worker.start();
         }
+    }
+
+    private void addTimerToWorker(ConsumerWorker worker) {
+        new ConsumerTimer(worker, 1000000);
     }
 
     /**

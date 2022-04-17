@@ -23,16 +23,13 @@ public class Main {
      * @param args optional arguments
      */
     public static void main(String[] args) {
-        int iter = 0;
-        int maxIter = 5;
-        while (iter < maxIter) {
-            try {
-                Thread.sleep(8000);
-                logger.info("Finished iteration {} out of {}", iter + 1, maxIter);
-                iter++;
-            } catch (InterruptedException ie) {
-                logger.info("Could not put thread to sleep");
-            }
+        final int millisToWait = 800;
+        try {
+            logger.info("Waiting for broker to be ready. Waiting for {} milliseconds.",
+                    millisToWait);
+            Thread.sleep(millisToWait);
+        } catch (InterruptedException ie) {
+            logger.info("Could not put thread to sleep");
         }
 
         int consumerCount = getConsumerCount(args);

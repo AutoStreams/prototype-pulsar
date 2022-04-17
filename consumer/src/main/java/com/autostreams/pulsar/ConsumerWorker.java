@@ -4,6 +4,8 @@
 
 package com.autostreams.pulsar;
 
+import com.autostreams.pulsar.observer.Observer;
+import com.autostreams.pulsar.observer.Subject;
 import com.autostreams.utils.fileutils.FileUtils;
 import java.io.IOException;
 import java.util.HashMap;
@@ -26,12 +28,13 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  * @since 1.0
  */
-public class ConsumerWorker implements Runnable {
+public class ConsumerWorker implements Runnable, Subject {
     private static final String CONFIG_NAME = "consumerconfig.properties";
     private final Logger logger = LoggerFactory.getLogger(ConsumerWorker.class);
     private Consumer<String> consumer = null;
     private boolean running = false;
     private Set<String> topics = new HashSet<>();
+    private final HashSet<Observer> observers = new HashSet<>();
 
     /**
      * Initializes and prepares the consumer for use.
@@ -44,7 +47,6 @@ public class ConsumerWorker implements Runnable {
             ioe.printStackTrace();
         }
         running = true;
-        this.start();
     }
 
     /**
@@ -134,16 +136,23 @@ public class ConsumerWorker implements Runnable {
         return consumerProperties;
     }
 
+    /**
+     * Attempts to receive a message from a broker. Upon receiving a message, an acknowledgement
+     * is attempted. If acknowledgement fails, the subsequent exception is called and a negative
+     * acknowledgement is sent.
+     */
     private void receive() {
         while (running) {
             Message<String> message = null;
 
             try {
-                logger.info("Waiting to receive message...");
+                logger.debug("Waiting to receive message...");
                 message = this.consumer.receive();
 
-                this.consumer.acknowledge(message);
-                logger.info("Consumer received message {}", message.getValue());
+                this.consumer.acknowledgeAsync(message);
+                this.notifyObservers();
+
+                logger.info("Value: {}, Offset: {}", message.getValue(), message.getSequenceId());
 
             } catch (PulsarClientException e) {
                 consumer.negativeAcknowledge(message);
@@ -153,11 +162,28 @@ public class ConsumerWorker implements Runnable {
     }
 
     /**
-     * Continuously receives messages from the broker, and displays the messages in terminal
-     * as they are received.
+     * Main loop of the worker.
      */
     @Override
     public void run() {
         receive();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void subscribe(Observer subscriber) {
+        observers.add(subscriber);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void notifyObservers() {
+        for (Observer observer : observers) {
+            observer.update();
+        }
     }
 }
