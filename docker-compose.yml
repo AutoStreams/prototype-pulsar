@@ -1,19 +1,12 @@
 version: "3.8"
 
 services:
-
-  #------------------------------------#
-  #------| Streams Pulsar utils |------#
-  #------------------------------------#
   data-provider:
     build: ./data-provider
     environment:
       PRODUCER_URL: producer
       PRODUCER_PORT: 8992
 
-  #-----------------------------------#
-  #----| Implementation Services |----#
-  #-----------------------------------#
   producer:
     build: ./producer
     environment:
@@ -38,12 +31,3 @@ services:
     environment:
       PULSAR_MEM: " -Xms512m -Xmx512m -XX:MaxDirectMemorySize=1g"    
     command: bin/pulsar standalone
-
-      # broker-2:
-      #image: apachepulsar/pulsar:2.6.0
-      # ports:
-      #- 8081:8080
-      #- 6651:6650
-      #environment:
-      #PULSAR_MEM: " -Xms512m -Xmx512m -XX:MaxDirectMemorySize=1g"    
-      #command: bin/pulsar standalone

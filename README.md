@@ -24,10 +24,10 @@ All code and modules should now be available in your local repository.
 
 To build the docker images, execute the command:
 ```bash
-docker compose -f docker-compose.yml -f broker/docker-compose.yml build
+docker compose build
 ```
 
 To execute the built images, execute the command:
 ```bash
-docker compose -f docker-compose.yml -f broker/docker-compose.yml up
+docker compose up
 ```
