@@ -10,7 +10,7 @@ The following section explains how to build and run the project.
 **Prerequisites**
 * Download the latest version of [Maven](https://maven.apache.org/).
 * Download a Java JDK of version 17
-* Set the working directory to the root of this Pulsar prototype producer project which is **`prototype-pulsar`**
+* Set the working directory to the root of this Pulsar prototype producer project which is **`prototype-pulsar/producer`**
 
 To build the project with its dependencies to a single jar file, execute the command:
 ```bash
@@ -23,7 +23,7 @@ java -jar target/pulsar-producer.jar
 ### Option 2: Build and run with Docker
 **Prerequisites**
 * Make sure you have downloaded [Docker](https://www.docker.com/) on your system.
-* Set the working directory to the root of this Pulsar prototype producer project i.e. **`prototype-pulsar`**
+* Set the working directory to the root of this Pulsar prototype producer project i.e. **`prototype-pulsar/producer`**
  
 To build the docker image, execute the command:
 ```bash
